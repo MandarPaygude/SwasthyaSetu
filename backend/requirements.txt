@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+pydantic-settings
+gspread
+google-auth-oauthlib
+google-auth-httplib2
+google-auth
+python-dotenv
+aiofiles
+PyJWT
+
