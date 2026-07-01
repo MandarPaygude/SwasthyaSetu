@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>स्वास्थ्यसेतू प्रशिक्षण</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    background: #f0f4f8;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .slide-container {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100vh;
+  }
+
+  .slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 40px;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  .slide::-webkit-scrollbar { width: 5px; }
+  .slide::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+  /* Navigation */
+  .nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1000;
+    border-top: 2px solid #e0e7ef;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  }
+
+  .nav-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-btn:hover { background: #1d4ed8; transform: scale(1.02); }
+  .nav-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+  .nav-btn.prev { background: #64748b; }
+  .nav-btn.prev:hover { background: #475569; }
+
+  .slide-counter {
+    font-size: 15px;
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    transition: all 0.3s;
+  }
+  .dot.active { background: #2563eb; width: 24px; border-radius: 4px; }
+
+  /* Slide backgrounds */
+  .slide.title-slide { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #1d4ed8 100%); color: white; }
+  .slide.intro-slide { background: linear-gradient(135deg, #0f766e, #14b8a6); color: white; }
+  .slide.blue-slide { background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; }
+  .slide.green-slide { background: linear-gradient(135deg, #166534, #22c55e); color: white; }
+  .slide.orange-slide { background: linear-gradient(135deg, #9a3412, #f97316); color: white; }
+  .slide.purple-slide { background: linear-gradient(135deg, #581c87, #a855f7); color: white; }
+  .slide.red-slide { background: linear-gradient(135deg, #991b1b, #ef4444); color: white; }
+  .slide.white-slide { background: #ffffff; color: #1e293b; }
+  .slide.gray-slide { background: #f8fafc; color: #1e293b; border: 4px solid #e2e8f0; }
+
+  /* Content styles */
+  .slide-icon { font-size: 72px; margin-bottom: 16px; }
+  .slide-title {
+    font-size: 38px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .slide-subtitle {
+    font-size: 22px;
+    font-weight: 500;
+    text-align: center;
+    opacity: 0.9;
+    line-height: 1.5;
+    max-width: 700px;
+  }
+  .slide-body {
+    font-size: 20px;
+    line-height: 1.7;
+    text-align: center;
+    max-width: 750px;
+    margin: 12px auto;
+  }
+
+  /* Phone mockup */
+  .phone-frame {
+    background: #111;
+    border-radius: 36px;
+    padding: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    width: 280px;
+    margin: 10px auto;
+    position: relative;
+  }
+  .phone-screen {
+    background: #fff;
+    border-radius: 24px;
+    padding: 16px;
+    min-height: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 24px;
+    background: #111;
+    border-radius: 0 0 16px 16px;
+  }
+  .phone-bar {
+    height: 4px;
+    width: 40px;
+    background: #333;
+    border-radius: 2px;
+    margin: 0 auto 8px;
+  }
+
+  /* Phone screen elements */
+  .ps-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e3a5f;
+    text-align: center;
+  }
+  .ps-subtitle {
+    font-size: 11px;
+    color: #64748b;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .ps-field {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #94a3b8;
+    border: 2px solid #e2e8f0;
+  }
+  .ps-field.active { border-color: #3b82f6; background: #eff6ff; color: #1e293b; }
+  .ps-field.label { font-size: 11px; font-weight: 600; color: #475569; padding: 4px 14px 0; background: none; border: none; }
+  .ps-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 4px;
+  }
+  .ps-btn.green { background: #16a34a; }
+  .ps-btn.orange { background: #ea580c; }
+  .ps-card {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ps-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .ps-card-icon.green { background: #dcfce7; }
+  .ps-card-icon.orange { background: #ffedd5; }
+  .ps-card-text { font-size: 13px; font-weight: 600; color: #1e293b; }
+  .ps-card-desc { font-size: 11px; color: #64748b; }
+  .ps-label { font-size: 10px; color: #64748b; font-weight: 600; margin-top: 2px; }
+
+  /* Steps list */
+  .steps {
+    text-align: left;
+    max-width: 650px;
+    margin: 10px auto;
+    padding: 0;
+    list-style: none;
+  }
+  .steps li {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  .step-num {
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .white-slide .step-num, .gray-slide .step-num { background: #2563eb; color: white; }
+
+  .step-num.orange { background: #f97316; }
+
+  .highlight-box {
+    background: rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 16px 20px;
+    max-width: 650px;
+    margin: 8px auto;
+    text-align: left;
+    font-size: 17px;
+    line-height: 1.6;
+    border-left: 4px solid rgba(255,255,255,0.5);
+  }
+  .white-slide .highlight-box { background: #f1f5f9; border-left-color: #2563eb; color: #1e293b; }
+
+  .highlight-box.red { border-left-color: #ef4444; }
+  .highlight-box.green { border-left-color: #22c55e; }
+  .highlight-box.orange { border-left-color: #f97316; }
+
+  .two-col {
+    display: flex;
+    gap: 30px;
+    max-width: 800px;
+    margin: 10px auto;
+    align-items: center;
+  }
+  .col { flex: 1; text-align: center; }
+
+  .tip-icon { font-size: 40px; margin-bottom: 4px; }
+  .tip-label { font-size: 16px; font-weight: 700; }
+
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 4px;
+  }
+  .white-slide .badge { background: #e2e8f0; }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    max-width: 650px;
+    margin: 8px auto;
+    text-align: left;
+  }
+  .field-item {
+    font-size: 15px;
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .field-item::before { content: "▸"; opacity: 0.6; }
+
+  .big-num {
+    font-size: 56px;
+    font-weight: 900;
+    opacity: 0.3;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+  }
+
+  .form-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+  }
+  .flow-step {
+    background: rgba(255,255,255,0.15);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .flow-arrow { font-size: 18px; opacity: 0.5; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 20px; justify-content: flex-start; padding-top: 30px; }
+    .slide-title { font-size: 26px; }
+    .slide-subtitle { font-size: 17px; }
+    .slide-body { font-size: 16px; }
+    .slide-icon { font-size: 48px; }
+    .steps li { font-size: 15px; }
+    .two-col { flex-direction: column; gap: 16px; }
+    .phone-frame { width: 220px; }
+    .phone-screen { min-height: 360px; padding: 12px; }
+    .field-grid { grid-template-columns: 1fr; }
+    .form-flow { gap: 4px; }
+    .flow-step { font-size: 11px; padding: 4px 8px; }
+    .nav-btn { padding: 8px 14px; font-size: 13px; }
+    .slide-counter { font-size: 12px; }
+    .big-num { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slide-container" id="slides">
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<div class="slide title-slide">
+  <div class="slide-icon">🏥</div>
+  <div class="slide-title">स्वास्थ्यसेतू</div>
+  <div class="slide-subtitle">समुदाय आरोग्य सर्वेक्षण<br>प्रशिक्षण कार्यक्रम</div>
+  <div style="margin-top:30px; display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
+    <span class="badge">📱 मोबाइल ॲप</span>
+    <span class="badge">📋 सर्वेक्षण फॉर्म</span>
+    <span class="badge">🏘️ वस्ती सर्वेक्षण</span>
+  </div>
+  <div style="margin-top:30px; opacity:0.6; font-size:15px;">पुढे जाण्यासाठी ➡ बटण दाबा किंवा उजवीकडे स्वाइप करा</div>
+  <div class="big-num">1</div>
+</div>
+
+<!-- ==================== SLIDE 2: WHAT IS SWASTHYASETU ==================== -->
+<div class="slide intro-slide">
+  <div class="slide-icon">❓</div>
+  <div class="slide-title">हे ॲप म्हणजे काय?</div>
+  <div class="slide-body">
+    स्वास्थ्यसेतू हे एक <strong>मोबाइल ॲप्लिकेशन</strong> आहे.
+    यामध्ये तुम्ही <strong>वस्तीतील कुटुंबांची</strong> आरोग्य माहिती भरता.
+  </div>
+  <div class="highlight-box" style="text-align:center;">
+    <div style="font-size:28px;margin-bottom:6px;">🎯</div>
+    <strong>उद्देशः</strong> सरकारला वस्तीतील लोकांच्या आरोग्याची माहिती मिळावी<br>
+    जेणेकरून त्यांना योग्य आरोग्य सेवा पोहोचवता येईल.
+  </div>
+  <div class="form-flow" style="margin-top:16px;">
+    <span class="flow-step">📱 ॲप उघडा</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">🔑 लॉगिन करा</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">🏠 घरगुती माहिती भरा</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">🩺 शस्त्रक्रिया माहिती भरा</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">✅ सबमिट करा</span>
+  </div>
+  <div class="big-num">2</div>
+</div>
+
+<!-- ==================== SLIDE 3: PHONE UNLOCK ==================== -->
+<div class="slide blue-slide">
+  <div class="slide-icon">📲</div>
+  <div class="slide-title">ॲप कसे उघडायचे?</div>
+  <div class="two-col">
+    <div class="col">
+      <div style="font-size:50px;margin-bottom:6px;">🔓</div>
+      <div style="font-size:18px;font-weight:600;">१. फोन अनलॉक करा</div>
+      <div style="font-size:16px;opacity:0.8;">तुमचा मोबाइल फोन उघडा</div>
+    </div>
+    <div class="col">
+      <div style="font-size:50px;margin-bottom:6px;">👆</div>
+      <div style="font-size:18px;font-weight:600;">२. स्वास्थ्यसेतू ॲप शोधा</div>
+      <div style="font-size:16px;opacity:0.8;">फोनमध्ये खालील आयकॉन शोधा</div>
+    </div>
+  </div>
+  <div class="phone-frame" style="margin-top:8px;">
+    <div class="phone-notch"></div>
+    <div class="phone-screen" style="align-items:center;justify-content:center;gap:4px;">
+      <div class="phone-bar"></div>
+      <div style="font-size:40px;margin:6px 0;">🏥</div>
+      <div style="font-size:20px;font-weight:900;color:#1e3a5f;">स्वास्थ्यसेतू</div>
+      <div style="font-size:11px;color:#64748b;">या आयकॉनवर टॅप करा</div>
+      <div style="display:flex;gap:30px;margin-top:20px;opacity:0.4;font-size:20px;">📞 📷 🎮</div>
+    </div>
+  </div>
+  <div class="big-num">3</div>
+</div>
+
+<!-- ==================== SLIDE 4: LOGIN ==================== -->
+<div class="slide blue-slide">
+  <div class="slide-icon">🔑</div>
+  <div class="slide-title">लॉगिन कसे करायचे?</div>
+  <div class="two-col" style="gap:20px;">
+    <div class="col">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-bar"></div>
+          <div class="ps-title">🏥 स्वास्थ्यसेतू</div>
+          <div class="ps-subtitle">समुदाय आरोग्य सर्वेक्षण</div>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;">
+            <div class="ps-field label">📞 मोबाइल नंबर</div>
+            <div class="ps-field active" style="display:flex;align-items:center;gap:6px;">
+              <span style="color:#1e293b;font-weight:600;">+91</span>
+              <span style="color:#1e293b;">९८७६५४३२१०</span>
+            </div>
+            <div style="font-size:10px;color:#64748b;padding:0 4px;">* फक्त १० आकडे टाका</div>
+            <div class="ps-btn">🔓 लॉगिन करा</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="text-align:left;">
+      <ul class="steps">
+        <li><span class="step-num">१</span> तुमचा <strong>१० आकडी मोबाइल नंबर</strong> टाका</li>
+        <li><span class="step-num">२</span> फक्त <strong>संख्या (आकडे)</strong> टाका — अक्षरे नको</li>
+        <li><span class="step-num">३</span> <strong>"लॉगिन करा"</strong> बटण दाबा</li>
+        <li><span class="step-num">४</span> थोडा वेळ थांबा — ॲप तुम्हाला ओळखेल</li>
+      </ul>
+    </div>
+  </div>
+  <div class="big-num">4</div>
+</div>
+
+<!-- ==================== SLIDE 5: HOME SCREEN ==================== -->
+<div class="slide blue-slide">
+  <div class="slide-icon">🏠</div>
+  <div class="slide-title">मुख्य स्क्रीन (Home Screen)</div>
+  <div class="two-col" style="gap:20px;">
+    <div class="col">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-bar"></div>
+          <div style="font-size:14px;font-weight:700;color:#1e3a5f;">नमस्कार, रमेश! 🙏</div>
+          <div style="font-size:10px;color:#64748b;">स्वास्थ्यसेतू समुदाय आरोग्य सर्वेक्षण</div>
+          <div style="font-size:12px;font-weight:600;color:#475569;margin:4px 0 2px;">सर्वेक्षण फॉर्म</div>
+          <div class="ps-card">
+            <div class="ps-card-icon green">🏠</div>
+            <div>
+              <div class="ps-card-text">घरगुती सर्वेक्षण</div>
+              <div class="ps-card-desc">कुटुंबाची माहिती व आरोग्य</div>
+            </div>
+          </div>
+          <div class="ps-card">
+            <div class="ps-card-icon orange">🩺</div>
+            <div>
+              <div class="ps-card-text">शस्त्रक्रिया सर्वेक्षण</div>
+              <div class="ps-card-desc">शस्त्रक्रिया तपासणी फॉर्म</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;text-align:center;padding:6px;font-size:11px;color:#94a3b8;">
+            🏠 मुख्य &nbsp;|&nbsp; 📋 घरगुती &nbsp;|&nbsp; 🩺 शस्त्रक्रिया
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="text-align:left;">
+      <ul class="steps">
+        <li><span class="step-num">🎯</span> तुम्हाला <strong>दोन पर्याय</strong> दिसतील</li>
+      </ul>
+      <div class="highlight-box">
+        <strong>🏠 घरगुती सर्वेक्षण</strong><br>
+        यामध्ये कुटुंबाची सर्व माहिती भरायची आहे —<br>
+        पत्ता, धर्म, उत्पन्न, आरोग्य, कुटुंब सदस्य
+      </div>
+      <div class="highlight-box" style="margin-top:6px;">
+        <strong>🩺 शस्त्रक्रिया सर्वेक्षण</strong><br>
+        यामध्ये एखाद्या व्यक्तीच्या शस्त्रक्रिया संबंधी<br>
+        माहिती भरायची आहे
+      </div>
+    </div>
+  </div>
+  <div class="big-num">5</div>
+</div>
+
+<!-- ==================== SLIDE 6: HOUSEHOLD PART 1 ==================== -->
+<div class="slide green-slide">
+  <div class="slide-icon">🏠</div>
+  <div class="slide-title">घरगुती सर्वेक्षण — भाग १</div>
+  <div class="slide-subtitle" style="font-size:18px;">सर्वेक्षण माहिती + सामाजिक माहिती</div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:12px 0;">
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:10px 16px;min-width:150px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">📍</div>
+      <div style="font-size:13px;font-weight:600;">सर्वेक्षण ठिकाण</div>
+      <div style="font-size:11px;opacity:0.8;">वस्तीचे नाव</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:10px 16px;min-width:150px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">👤</div>
+      <div style="font-size:13px;font-weight:600;">प्रतिसादकर्त्याचे नाव</div>
+      <div style="font-size:11px;opacity:0.8;">ज्याच्याशी बोलता</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:10px 16px;min-width:150px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">🏘️</div>
+      <div style="font-size:13px;font-weight:600;">वॉर्ड</div>
+      <div style="font-size:11px;opacity:0.8;">यादीतून निवडा</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:10px 16px;min-width:150px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:4px;">📅</div>
+      <div style="font-size:13px;font-weight:600;">मुलाखत तारीख</div>
+      <div style="font-size:11px;opacity:0.8;">DD-MM-YYYY</div>
+    </div>
+  </div>
+  <div class="highlight-box" style="text-align:left;">
+    <strong>📝 लक्षात ठेवा:</strong><br>
+    • <strong>सर्वेक्षण ठिकाण</strong> — तुम्ही कोणत्या वस्तीत आहात ते लिहा<br>
+    • <strong>पत्ता</strong> — संपूर्ण पत्ता लिहा (घर क्रमांक, रस्ता, वस्ती)<br>
+    • <strong>वॉर्ड</strong> — दिलेल्या यादीतून वॉर्ड निवडा<br>
+    • <strong>मोबाइल नंबर</strong> — कुटुंबप्रमुखाचा १० आकडी नंबर
+  </div>
+  <div class="big-num">6</div>
+</div>
+
+<!-- ==================== SLIDE 7: HOUSEHOLD PART 2 ==================== -->
+<div class="slide green-slide">
+  <div class="slide-icon">📋</div>
+  <div class="slide-title">घरगुती सर्वेक्षण — भाग २</div>
+  <div class="slide-subtitle" style="font-size:18px;">धर्म, जात, कार्डे, आरोग्य विमा</div>
+  <div class="two-col" style="gap:16px;max-width:700px;">
+    <div class="col" style="text-align:left;">
+      <div class="highlight-box" style="margin:4px 0;">
+        <strong>🙏 धर्म व जात</strong><br>
+        • धर्म — हिंदू / मुस्लिम / ख्रिश्चन / इतर<br>
+        • जात प्रवर्ग — SC / OBC / ST / सामान्य<br>
+        • <em>"इतर" असेल तर तपशील लिहा</em>
+      </div>
+      <div class="highlight-box" style="margin:4px 0;">
+        <strong>💳 कार्डे विभाग</strong><br>
+        • रेशन कार्ड आहे का? (होय / नाही)<br>
+        • आयुष्मान कार्ड आहे का?<br>
+        • आधार कार्ड आहे का?<br>
+        • पॅन कार्ड, SGY कार्ड, NCD कार्ड
+      </div>
+    </div>
+    <div class="col" style="text-align:left;">
+      <div class="highlight-box" style="margin:4px 0;border-left-color:#f97316;">
+        <strong>⚠️ महत्त्वाचे:</strong><br>
+        प्रश्न काळजीपूर्वक वाचा.<br>
+        <strong>"होय" किंवा "नाही"</strong> मध्ये उत्तर द्या.<br>
+        बरोबर उत्तर — खोटे सांगू नका.
+      </div>
+      <div class="highlight-box" style="margin:4px 0;">
+        <strong>🏥 आरोग्य विमा</strong><br>
+        • कुटुंबाकडे आरोग्य विमा आहे का?<br>
+        • असल्यास — प्रकार निवडा<br>
+        &nbsp;&nbsp; (सरकारी / खाजगी / ESI)
+      </div>
+    </div>
+  </div>
+  <div class="big-num">7</div>
+</div>
+
+<!-- ==================== SLIDE 8: HOUSEHOLD PART 3 ==================== -->
+<div class="slide green-slide">
+  <div class="slide-icon">🏡</div>
+  <div class="slide-title">घरगुती सर्वेक्षण — भाग ३</div>
+  <div class="slide-subtitle" style="font-size:18px;">राहणीमान, उत्पन्न, कुटुंब, शस्त्रक्रिया</div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:8px 0;max-width:750px;">
+    <div style="background:rgba(255,255,255,0.12);border-radius:12px;padding:8px 12px;font-size:14px;">
+      🏠 घराचा प्रकार (कच्चं / पक्कं)
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:12px;padding:8px 12px;font-size:14px;">
+      💡 प्रकाशाचे साधन (वीज / किट)
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:12px;padding:8px 12px;font-size:14px;">
+      🪵 स्वयंपाकाचे इंधन
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:12px;padding:8px 12px;font-size:14px;">
+      🚰 पिण्याच्या पाण्याचे साधन
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:12px;padding:8px 12px;font-size:14px;">
+      💰 मासिक उत्पन्न (₹)
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:12px;padding:8px 12px;font-size:14px;">
+      🏥 मासिक आरोग्य खर्च (₹)
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:12px;padding:8px 12px;font-size:14px;">
+      👨‍👩‍👧‍👦 कुटुंब सदस्यांची यादी
+    </div>
+  </div>
+  <div class="highlight-box" style="text-align:left;max-width:700px;">
+    <strong>👨‍👩‍👧‍👦 कुटुंब सदस्य कसे भरायचे?</strong><br>
+    • <strong>"सदस्य जोडा"</strong> बटण दाबा<br>
+    • प्रत्येक सदस्याचे — नाव, नाते, लिंग, वय, शिक्षण, व्यवसाय भरा<br>
+    • सर्व सदस्य भरल्यावर पुढे जा<br>
+    • <strong>चूक झाल्यास</strong> — त्या सदस्याच्या "काढा" बटणावर दाबा
+  </div>
+  <div class="big-num">8</div>
+</div>
+
+<!-- ==================== SLIDE 9: HOUSEHOLD SUBMIT ==================== -->
+<div class="slide green-slide">
+  <div class="slide-icon">✅</div>
+  <div class="slide-title">घरगुती सर्वेक्षण — सबमिट</div>
+  <div class="two-col" style="gap:20px;">
+    <div class="col">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="align-items:center;justify-content:center;gap:4px;">
+          <div class="phone-bar"></div>
+          <div style="font-size:40px;margin:6px 0;">✅</div>
+          <div style="font-size:18px;font-weight:700;color:#16a34a;">यशस्वी!</div>
+          <div style="font-size:12px;color:#475569;text-align:center;">
+            घरगुती सर्वेक्षण<br>यशस्वीरीत्या सबमिट झाले!
+          </div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:8px;">✅ ID: #४२</div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="text-align:left;">
+      <ul class="steps">
+        <li><span class="step-num">१</span> सर्व विभाग <strong>हिरव्या रंगाने</strong> भरले का तपासा</li>
+        <li><span class="step-num">२</span> शेवटपर्यंत स्क्रोल करा</li>
+        <li><span class="step-num">३</span> <strong>"सबमिट करा"</strong> बटण दाबा</li>
+        <li><span class="step-num">४</span> <span style="font-size:20px;">✅</span> <strong>"यशस्वी"</strong> संदेश दिसेल</li>
+      </ul>
+    </div>
+  </div>
+  <div class="big-num">9</div>
+</div>
+
+<!-- ==================== SLIDE 10: SURGERY PART 1 ==================== -->
+<div class="slide orange-slide">
+  <div class="slide-icon">🩺</div>
+  <div class="slide-title">शस्त्रक्रिया सर्वेक्षण — भाग १</div>
+  <div class="slide-subtitle" style="font-size:18px;">सर्वेक्षण माहिती + रुग्ण माहिती</div>
+  <div class="two-col" style="gap:16px;max-width:700px;">
+    <div class="col" style="text-align:left;">
+      <div class="highlight-box" style="margin:4px 0;">
+        <strong>📝 सर्वेक्षण माहिती</strong><br>
+        • सर्वेक्षण ठिकाण — वस्तीचे नाव<br>
+        • सर्वेक्षकाचे नाव — आपोआप येईल<br>
+        • मुलाखत तारीख — DD-MM-YYYY<br>
+        • पत्ता — संपूर्ण पत्ता<br>
+        • <strong>रुग्णाचे नाव</strong> — ज्या व्यक्तीबद्दल माहिती भरत आहात
+      </div>
+    </div>
+    <div class="col" style="text-align:left;">
+      <div class="highlight-box" style="margin:4px 0;">
+        <strong>👤 रुग्ण माहिती</strong><br>
+        • वय — फक्त आकडे (उदा. ३५)<br>
+        • लिंग — पुरुष / स्त्री<br>
+        • शिक्षण — किती शिक्षण झाले<br>
+        • व्यवसाय — यादीतून निवडा<br>
+        &nbsp;&nbsp; (नोकरी / व्यवसाय / मजुरी / घरकाम / शिक्षण)
+      </div>
+    </div>
+  </div>
+  <div class="highlight-box" style="background:rgba(255,255,255,0.08);max-width:700px;text-align:center;border-left-color:#f97316;">
+    <strong>🔑 महत्त्वाचे:</strong> योग्य <strong>वॉर्ड</strong> निवडा —<br>
+    बिबवेवाडी, धनकावडी-सहकारनगर, कसबा-विश्रामबागवाडा, सिंहगड रोड
+  </div>
+  <div class="big-num">10</div>
+</div>
+
+<!-- ==================== SLIDE 11: SURGERY BODY SECTIONS ==================== -->
+<div class="slide orange-slide">
+  <div class="slide-icon">🦵</div>
+  <div class="slide-title">शस्त्रक्रिया सर्वेक्षण — भाग २</div>
+  <div class="slide-subtitle" style="font-size:18px;">शरीर विभाग तपासणी (६ विभाग)</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:650px;margin:8px 0;">
+    <span style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:14px;">६.१ 😊 चेहरा / डोके / मान</span>
+    <span style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:14px;">६.२ ❤️ छाती</span>
+    <span style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:14px;">६.३ 🔙 पाठ</span>
+    <span style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:14px;">६.४ 🫃 उदर (पोट)</span>
+    <span style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:14px;">६.५ 🦵 मांडी / जननेंद्रिय</span>
+    <span style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:14px;">६.६ 💪 हात / पाय</span>
+  </div>
+  <div class="highlight-box" style="text-align:left;max-width:700px;">
+    <strong>प्रत्येक विभागात खालील प्रश्न विचारले जातील:</strong><br>
+    • "गेल्या वर्षात या भागात काही त्रास होता का?" → <strong>होय / नाही</strong><br>
+    • "होय" असल्यास — त्रासाचा प्रकार, दुखापतीचे कारण, कालावधी<br>
+    • उपचार घेतला का? कोठे? कोणत्या प्रकारचा उपचार?<br>
+    • रोजच्या जीवनावर कसा परिणाम?
+  </div>
+  <div class="big-num">11</div>
+</div>
+
+<!-- ==================== SLIDE 12: SURGERY PART 3 ==================== -->
+<div class="slide orange-slide">
+  <div class="slide-icon">🩸</div>
+  <div class="slide-title">शस्त्रक्रिया सर्वेक्षण — भाग ३</div>
+  <div class="slide-subtitle" style="font-size:18px;">मासिक पाळी / गर्भधारणा / BP / SF-12</div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:720px;">
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:10px 14px;text-align:left;width:200px;">
+      <div style="font-size:16px;margin-bottom:4px;">🩸 मासिक पाळी</div>
+      <div style="font-size:12px;opacity:0.9;">
+        • स्थिती (नियमित / अनियमित)<br>
+        • रक्तस्रावाचे दिवस<br>
+        • वेदना / उपचार
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:10px 14px;text-align:left;width:200px;">
+      <div style="font-size:16px;margin-bottom:4px;">🤰 गर्भधारणा</div>
+      <div style="font-size:12px;opacity:0.9;">
+        • एकूण गर्भधारणा संख्या<br>
+        • घर / रुग्णालयात बाळंतपण<br>
+        • सध्या गर्भवती?
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:10px 14px;text-align:left;width:200px;">
+      <div style="font-size:16px;margin-bottom:4px;">🩺 BP / मधुमेह</div>
+      <div style="font-size:12px;opacity:0.9;">
+        • BP आहे का?<br>
+        • मधुमेह आहे का?<br>
+        • तंबाखू / मद्यपान
+      </div>
+    </div>
+  </div>
+  <div class="highlight-box" style="max-width:700px;text-align:left;margin-top:8px;">
+    <strong>📊 SF-12 आरोग्य प्रश्नावली:</strong> १२ प्रश्न — तुमच्या सामान्य आरोग्याबद्दल<br>
+    उदा. "तुमचे सामान्य आरोग्य कसे आहे?" → उत्तम / खूप चांगले / चांगले / साधारण / वाईट
+  </div>
+  <div class="big-num">12</div>
+</div>
+
+<!-- ==================== SLIDE 13: SURGERY SUBMIT ==================== -->
+<div class="slide orange-slide">
+  <div class="slide-icon">✅</div>
+  <div class="slide-title">शस्त्रक्रिया सर्वेक्षण — सबमिट</div>
+  <div class="two-col" style="gap:20px;">
+    <div class="col">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="align-items:center;justify-content:center;gap:4px;">
+          <div class="phone-bar"></div>
+          <div style="font-size:40px;margin:6px 0;">✅</div>
+          <div style="font-size:18px;font-weight:700;color:#16a34a;">यशस्वी!</div>
+          <div style="font-size:12px;color:#475569;text-align:center;">
+            शस्त्रक्रिया सर्वेक्षण<br>यशस्वीरीत्या सबमिट झाले!
+          </div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:8px;">✅ ID: #१८</div>
+        </div>
+      </div>
+    </div>
+    <div class="col" style="text-align:left;">
+      <ul class="steps">
+        <li><span class="step-num">१</span> सर्व १२ विभाग भरले का तपासा</li>
+        <li><span class="step-num">२</span> <strong>"सबमिट करा"</strong> बटण दाबा</li>
+        <li><span class="step-num">३</span> <span style="font-size:20px;">✅</span> यशस्वी संदेशाची प्रतिक्षा करा</li>
+        <li><span class="step-num">४</span> पुढील सर्वेक्षण सुरू करा</li>
+      </ul>
+    </div>
+  </div>
+  <div class="big-num">13</div>
+</div>
+
+<!-- ==================== SLIDE 14: COMMON MISTAKES ==================== -->
+<div class="slide red-slide">
+  <div class="slide-icon">⚠️</div>
+  <div class="slide-title">सामान्य चुका — टाळा</div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:750px;">
+    <div style="background:rgba(255,255,255,0.1);border-radius:14px;padding:12px 16px;text-align:left;width:220px;">
+      <div style="font-size:24px;margin-bottom:4px;">❌</div>
+      <div style="font-size:15px;font-weight:600;">चुकीचा नंबर</div>
+      <div style="font-size:13px;opacity:0.9;">फक्त १० आकडी मोबाइल नंबर टाका. +91 लिहू नका.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.1);border-radius:14px;padding:12px 16px;text-align:left;width:220px;">
+      <div style="font-size:24px;margin-bottom:4px;">❌</div>
+      <div style="font-size:15px;font-weight:600;">रिकामे फील्ड</div>
+      <div style="font-size:13px;opacity:0.9;">सर्व आवश्यक फील्ड भरा. कोणतेही फील्ड रिकामे ठेवू नका.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.1);border-radius:14px;padding:12px 16px;text-align:left;width:220px;">
+      <div style="font-size:24px;margin-bottom:4px;">❌</div>
+      <div style="font-size:15px;font-weight:600;">खोटी माहिती</div>
+      <div style="font-size:13px;opacity:0.9;">बरोबर उत्तर द्या. खोटी माहिती दिल्यास सरकारला चुकीचा अंदाज येईल.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.1);border-radius:14px;padding:12px 16px;text-align:left;width:220px;">
+      <div style="font-size:24px;margin-bottom:4px;">❌</div>
+      <div style="font-size:15px;font-weight:600;">घाई करू नका</div>
+      <div style="font-size:13px;opacity:0.9;">प्रत्येक प्रश्न नीट वाचा. घाईत चुका होऊ शकतात.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.1);border-radius:14px;padding:12px 16px;text-align:left;width:220px;">
+      <div style="font-size:24px;margin-bottom:4px;">❌</div>
+      <div style="font-size:15px;font-weight:600;">तारखेचा फॉरमॅट</div>
+      <div style="font-size:13px;opacity:0.9;">तारीख नेहमी DD-MM-YYYY फॉरमॅटमध्ये भरा (उदा. १५-०६-२०२६)</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.1);border-radius:14px;padding:12px 16px;text-align:left;width:220px;">
+      <div style="font-size:24px;margin-bottom:4px;">❌</div>
+      <div style="font-size:15px;font-weight:600;">इंटरनेट नाही</div>
+      <div style="font-size:13px;opacity:0.9;">सबमिट करताना इंटरनेट कनेक्शन आवश्यक आहे. मोबाइल डेटा चालू ठेवा.</div>
+    </div>
+  </div>
+  <div class="big-num">14</div>
+</div>
+
+<!-- ==================== SLIDE 15: TIPS ==================== -->
+<div class="slide green-slide">
+  <div class="slide-icon">💡</div>
+  <div class="slide-title">महत्त्वाच्या टिप्स</div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:750px;">
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px;text-align:left;width:220px;">
+      <div style="font-size:28px;margin-bottom:4px;">🔋</div>
+      <div style="font-size:15px;font-weight:600;">फोन चार्ज ठेवा</div>
+      <div style="font-size:13px;opacity:0.9;">सर्वेक्षणाला जाण्यापूर्वी फोन पूर्ण चार्ज करा. बॅकअप पॉवर बँक सोबत ठेवा.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px;text-align:left;width:220px;">
+      <div style="font-size:28px;margin-bottom:4px;">📶</div>
+      <div style="font-size:15px;font-weight:600;">डेटा चालू ठेवा</div>
+      <div style="font-size:13px;opacity:0.9;">मोबाइल डेटा किंवा वायफाय चालू असल्याची खात्री करा. डेटा नसेल तर फॉर्म सबमिट होणार नाही.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px;text-align:left;width:220px;">
+      <div style="font-size:28px;margin-bottom:4px;">👥</div>
+      <div style="font-size:15px;font-weight:600;">कुटुंबासोबत बोला</div>
+      <div style="font-size:13px;opacity:0.9;">प्रश्न विचारताना कुटुंबप्रमुख किंवा जबाबदार व्यक्तीशी बोला. तिच/त्याच्याकडून बरोबर माहिती घ्या.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px;text-align:left;width:220px;">
+      <div style="font-size:28px;margin-bottom:4px;">🔁</div>
+      <div style="font-size:15px;font-weight:600;">एकाच वेळी एकच फॉर्म</div>
+      <div style="font-size:13px;opacity:0.9;">एकाच वेळी एकच फॉर्म भरा. सबमिट केल्यानंतरच पुढचा फॉर्म सुरू करा.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px;text-align:left;width:220px;">
+      <div style="font-size:28px;margin-bottom:4px;">📝</div>
+      <div style="font-size:15px;font-weight:600;">प्रोग्रेस बार पहा</div>
+      <div style="font-size:13px;opacity:0.9;">वरती प्रोग्रेस बार दिसेल. तो किती फॉर्म शिल्लक आहे ते दाखवतो. सर्व विभाग भरल्यावरच सबमिट करा.</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px;text-align:left;width:220px;">
+      <div style="font-size:28px;margin-bottom:4px;">🆘</div>
+      <div style="font-size:15px;font-weight:600;">मदत हवी असल्यास</div>
+      <div style="font-size:13px;opacity:0.9;">काही अडचण आल्यास तुमच्या सुपरवायझरला कॉल करा. मदत करण्यासाठी ते उपलब्ध आहेत.</div>
+    </div>
+  </div>
+  <div class="big-num">15</div>
+</div>
+
+<!-- ==================== SLIDE 16: HELP ==================== -->
+<div class="slide purple-slide">
+  <div class="slide-icon">🆘</div>
+  <div class="slide-title">मदत व संपर्क</div>
+  <div class="slide-subtitle">काही प्रश्न असल्यास किंवा अडचण आल्यास</div>
+  <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px;align-items:center;">
+    <div style="background:rgba(255,255,255,0.12);border-radius:16px;padding:14px 24px;min-width:280px;">
+      <div style="font-size:24px;margin-bottom:4px;">📞</div>
+      <div style="font-size:18px;font-weight:600;">तुमच्या सुपरवायझरशी संपर्क करा</div>
+      <div style="font-size:14px;opacity:0.9;">तुमच्या टीमचा सुपरवायझर तुम्हाला मदत करेल</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:16px;padding:14px 24px;min-width:280px;">
+      <div style="font-size:24px;margin-bottom:4px;">👨‍💼</div>
+      <div style="font-size:18px;font-weight:600;">प्रशिक्षक / फील्ड ऑफिसर</div>
+      <div style="font-size:14px;opacity:0.9;">प्रशिक्षण कार्यक्रमातील अधिकारी</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:16px;padding:14px 24px;min-width:280px;">
+      <div style="font-size:24px;margin-bottom:4px;">💬</div>
+      <div style="font-size:18px;font-weight:600;">ग्रुप चॅट / व्हॉट्सअॅप ग्रुप</div>
+      <div style="font-size:14px;opacity:0.9;">तुमच्या टीमच्या ग्रुपमध्ये विचारा</div>
+    </div>
+  </div>
+  <div style="margin-top:20px;background:rgba(255,255,255,0.1);border-radius:12px;padding:10px 20px;font-size:14px;">
+    <strong>लक्षात ठेवा:</strong> तुमचे काम खूप महत्त्वाचे आहे. तुम्ही भरलेल्या माहितीमुळे<br>
+    सरकारला वस्तीतील लोकांपर्यंत योग्य आरोग्य सेवा पोहोचवता येईल! 🙏
+  </div>
+  <div class="big-num">16</div>
+</div>
+
+<!-- ==================== SLIDE 17: THANK YOU ==================== -->
+<div class="slide title-slide">
+  <div class="slide-icon">🙏</div>
+  <div class="slide-title">आभारी आहे!</div>
+  <div class="slide-subtitle">
+    प्रशिक्षण कार्यक्रम संपला.<br>
+    तुमच्या सेवेबद्दल धन्यवाद!
+  </div>
+  <div style="margin-top:24px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:32px;">
+    <span>🏥</span> <span>📋</span> <span>✅</span> <span>🙏</span>
+  </div>
+  <div style="margin-top:24px;opacity:0.6;font-size:14px;">
+    स्वास्थ्यसेतू — आपल्या आरोग्याचा सेतू
+  </div>
+  <div class="big-num">17</div>
+</div>
+
+</div>
+
+<!-- Navigation bar -->
+<div class="nav-bar">
+  <button class="nav-btn prev" id="prevBtn" onclick="prevSlide()">← मागे</button>
+  
+  <div class="progress-dots" id="dots"></div>
+
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">पुढे →</button>
+</div>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  const dotsContainer = document.getElementById('dots');
+
+  // Create dots
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('data-index', i);
+    dot.addEventListener('click', () => goToSlide(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function updateSlide() {
+    const container = document.getElementById('slides');
+    container.style.transform = `translateX(-${currentSlide * 100}vw)`;
+    
+    document.getElementById('prevBtn').disabled = currentSlide === 0;
+    
+    // Update dots
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === currentSlide);
+    });
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides - 1) {
+      currentSlide++;
+      updateSlide();
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 0) {
+      currentSlide--;
+      updateSlide();
+    }
+  }
+
+  function goToSlide(index) {
+    currentSlide = index;
+    updateSlide();
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      nextSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      prevSlide();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goToSlide(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goToSlide(totalSlides - 1);
+    }
+  });
+
+  // Touch swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  document.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextSlide();
+      else prevSlide();
+    }
+  });
+</script>
+
+</body>
+</html>
