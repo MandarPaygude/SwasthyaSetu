@@ -354,7 +354,7 @@ export default function HouseholdForm() {
         child_count: Number(form.child_count),
         total_members: Number(form.total_members),
         illness_types: JSON.stringify(form.illness_types),
-        family_members: JSON.stringify(form.family_members),
+        family_members_json: JSON.stringify(form.family_members),
       };
       const response = await authenticatedFetch(`${API_URL}/api/forms/household`, {
         method: 'POST',

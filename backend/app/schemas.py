@@ -128,7 +128,7 @@ class HouseholdFormData(BaseModel):
     adult_count: int = Field(..., ge=0)
     child_count: int = Field(..., ge=0)
     total_members: int = Field(..., ge=1)
-    family_members: str = Field(..., max_length=10000)  # JSON string
+    family_members_json: str = Field(..., max_length=10000)  # JSON string
     had_surgery_last_year: str = Field(..., max_length=10)
     had_unmet_surgical_need: str = Field(..., max_length=10)
 

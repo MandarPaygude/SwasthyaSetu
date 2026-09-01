@@ -358,7 +358,7 @@ export default function SurgeryForm() {
         ...form,
         age: Number(form.age),
         body_sections: JSON.stringify(form.body_sections),
-        tobacco_use: JSON.stringify(form.tobacco_use),
+        tobacco_use: form.tobacco_use.join(','),
         menstrual_info: JSON.stringify({
           status: form.menstrual_status,
           period_last_year: form.period_last_year,
